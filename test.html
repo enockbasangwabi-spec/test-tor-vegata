@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore TEST ITA L2 (CISIA) - Tor Vergata</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0284c7;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
+        .timer-box {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--danger);
+            background: #fee2e2;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .intro-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            background: var(--secondary);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .level-badge {
+            background: rgba(255,255,255,0.25);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .sub-title {
+            margin-top: 22px;
+            margin-bottom: 4px;
+            color: var(--primary);
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+        .question-card {
+            margin: 25px 0;
+            padding: 20px;
+            border-left: 5px solid var(--secondary);
+            background: #f1f5f9;
+            border-radius: 0 8px 8px 0;
+        }
+        .options {
+            margin-top: 15px;
+        }
+        .option-label {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            background: #e2e8f0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 40px;
+        }
+        .btn-submit:hover {
+            background: #16a34a;
+        }
+        .audio-simulation, .text-passage {
+            background: #fff;
+            border: 1px dashed #94a3b8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        .grammar-microtext {
+            background: #fefce8;
+            border: 1px dashed #ca8a04;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            line-height: 1.8;
+        }
+        .blank-num {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            margin: 0 2px;
+        }
+        #result {
+            display: none;
+            padding: 30px;
+            background: #ecfdf5;
+            border: 2px solid var(--success);
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .section-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .section-breakdown div {
+            background: white;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 10px 18px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SIMULATORE TEST ITA L2 (CISIA)</h1>
+    <p>Università degli Studi di Roma Tor Vergata - Sessione Extra-UE</p>
+    <div class="timer-box">Tempo Rimasto: <span id="time">120:00</span></div>
+</header>
+
+<div class="container" id="quiz-container">
+    <div class="intro-box">
+        <strong>Struttura del Test (ufficiale CISIA TEST ITA L2):</strong> 120 minuti, 3 sezioni di difficoltà crescente da 40 minuti / 24 domande ciascuna (Sezione 1: A1/A2, Sezione 2: A2/B1+, Sezione 3: B2/C1). Ogni sezione contiene 1 brano di ascolto, 1 brano di lettura e 2 microtesti di strutture linguistiche. 72 domande a risposta multipla in totale.<br>
+        <em>Punteggio: +1 punto per risposta esatta, 0 punti per risposta omessa o errata (nessuna penalità). Punteggio massimo: 72/72.</em><br>
+        <em>Soglia Tor Vergata: l'ateneo richiede un punteggio minimo di <strong>61/72</strong> (equivalente al livello B2) per l'idoneità linguistica degli studenti extra-UE.</em>
+    </div>
+
+    <form id="quiz-form">
+
+        <!-- ================= SEZIONE 1: A1/A2 ================= -->
+        <h2 class="section-title">Sezione 1 <span class="level-badge">Livello A1/A2 · 24 domande · 40 min</span></h2>
+
+        <h3 class="sub-title">1a. Ascolto</h3>
+        <div class="audio-simulation">
+            <strong>Traccia Audio 1 (simulata):</strong> "Buongiorno a tutti gli studenti internazionali e benvenuti all'Università di Roma Tor Vergata. L'ufficio Segreteria Studenti si trova nell'Edificio B, al primo piano, ed è aperto dal lunedì al venerdì dalle 9:00 alle 13:00. Per ritirare il libretto universitario dovete portare un documento d'identità valido e la ricevuta di immatricolazione. La mensa universitaria è aperta tutti i giorni dalle 12:00 alle 15:00 e si trova vicino alla biblioteca centrale. Per informazioni sugli autobus e sui mezzi pubblici, potete chiedere alla portineria, che si trova al piano terra, vicino all'ingresso principale. Vi ricordiamo infine che il badge universitario si ritira sempre in Segreteria, previa prenotazione online."
+        </div>
+
+        <div class="question-card"><p><strong>1. Dove si trova l'ufficio Segreteria Studenti?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q1" value="A"> A) Edificio B, primo piano</label>
+                <label class="option-label"><input type="radio" name="q1" value="B"> B) Edificio A, piano terra</label>
+                <label class="option-label"><input type="radio" name="q1" value="C"> C) Edificio C, secondo piano</label>
+                <label class="option-label"><input type="radio" name="q1" value="D"> D) Vicino alla mensa</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>2. In quali giorni è aperta la Segreteria?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q2" value="A"> A) Tutti i giorni</label>
+                <label class="option-label"><input type="radio" name="q2" value="B"> B) Solo il lunedì</label>
+                <label class="option-label"><input type="radio" name="q2" value="C"> C) Dal lunedì al venerdì</label>
+                <label class="option-label"><input type="radio" name="q2" value="D"> D) Dal lunedì al sabato</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>3. Quali documenti servono per ritirare il libretto universitario?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q3" value="A"> A) Solo il passaporto</label>
+                <label class="option-label"><input type="radio" name="q3" value="B"> B) Documento d'identità e ricevuta di immatricolazione</label>
+                <label class="option-label"><input type="radio" name="q3" value="C"> C) Solo la ricevuta di immatricolazione</label>
+                <label class="option-label"><input type="radio" name="q3" value="D"> D) Il codice fiscale</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>4. A che ora apre la Segreteria?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q4" value="A"> A) Alle 13:00</label>
+                <label class="option-label"><input type="radio" name="q4" value="B"> B) Alle 10:00</label>
+                <label class="option-label"><input type="radio" name="q4" value="C"> C) Alle 8:00</label>
+                <label class="option-label"><input type="radio" name="q4" value="D"> D) Alle 9:00</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>5. Dove si trova la mensa universitaria?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q5" value="A"> A) Vicino alla biblioteca centrale</label>
+                <label class="option-label"><input type="radio" name="q5" value="B"> B) Nell'Edificio B</label>
+                <label class="option-label"><input type="radio" name="q5" value="C"> C) Vicino alla portineria</label>
+                <label class="option-label"><input type="radio" name="q5" value="D"> D) Nell'Aula Magna</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>6. A che ora chiude la mensa?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q6" value="A"> A) Alle 12:00</label>
+                <label class="option-label"><input type="radio" name="q6" value="B"> B) Alle 17:00</label>
+                <label class="option-label"><input type="radio" name="q6" value="C"> C) Alle 15:00</label>
+                <label class="option-label"><input type="radio" name="q6" value="D"> D) Alle 13:00</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>7. A chi bisogna chiedere informazioni sugli autobus?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q7" value="A"> A) Al tutor</label>
+                <label class="option-label"><input type="radio" name="q7" value="B"> B) Al professore</label>
+                <label class="option-label"><input type="radio" name="q7" value="C"> C) Alla biblioteca</label>
+                <label class="option-label"><input type="radio" name="q7" value="D"> D) Alla portineria</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>8. Come si ritira il badge universitario?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q8" value="A"> A) Per posta</label>
+                <label class="option-label"><input type="radio" name="q8" value="B"> B) In Segreteria, previa prenotazione online</label>
+                <label class="option-label"><input type="radio" name="q8" value="C"> C) Online senza prenotazione</label>
+                <label class="option-label"><input type="radio" name="q8" value="D"> D) Alla mensa</label>
+            </div>
+        </div>
+
+        <h3 class="sub-title">1b. Lettura</h3>
+        <div class="text-passage">
+            <strong>Testo 1 (email):</strong> "Oggetto: Benvenuto al Corso di Laurea in Economia e Gestione Aziendale. Cara Maria, ti scriviamo per darti il bentornato al nostro corso di laurea. Le lezioni iniziano lunedì 15 settembre alle ore 9:00 in Aula Magna. Per il primo giorno devi portare con te un computer portatile e un quaderno per gli appunti. Durante la settimana avrai lezione di Matematica ogni martedì e giovedì, mentre il mercoledì pomeriggio è dedicato al corso di Economia Aziendale. Il venerdì, invece, è il giorno libero dalle lezioni, dedicato allo studio individuale. Se hai domande sull'orario o sui programmi, scrivi al tuo tutor, il professor Bianchi, all'indirizzo bianchi@uniroma2.it. Ti aspettiamo numerosa! Cordiali saluti, La Segreteria Didattica"
+        </div>
+
+        <div class="question-card"><p><strong>9. Quando iniziano le lezioni del corso?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q9" value="A"> A) Martedì 16 settembre</label>
+                <label class="option-label"><input type="radio" name="q9" value="B"> B) Lunedì 15 settembre</label>
+                <label class="option-label"><input type="radio" name="q9" value="C"> C) Mercoledì 17 settembre</label>
+                <label class="option-label"><input type="radio" name="q9" value="D"> D) Venerdì 19 settembre</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>10. Dove si svolge la prima lezione?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q10" value="A"> A) In biblioteca</label>
+                <label class="option-label"><input type="radio" name="q10" value="B"> B) In laboratorio</label>
+                <label class="option-label"><input type="radio" name="q10" value="C"> C) In Aula Magna</label>
+                <label class="option-label"><input type="radio" name="q10" value="D"> D) In segreteria</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>11. Cosa deve portare Maria il primo giorno di lezione?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q11" value="A"> A) Solo i libri di testo</label>
+                <label class="option-label"><input type="radio" name="q11" value="B"> B) Computer portatile e quaderno</label>
+                <label class="option-label"><input type="radio" name="q11" value="C"> C) Il libretto universitario</label>
+                <label class="option-label"><input type="radio" name="q11" value="D"> D) Una lettera di presentazione</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>12. In quali giorni della settimana c'è lezione di Matematica?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q12" value="A"> A) Lunedì e mercoledì</label>
+                <label class="option-label"><input type="radio" name="q12" value="B"> B) Martedì e giovedì</label>
+                <label class="option-label"><input type="radio" name="q12" value="C"> C) Mercoledì e venerdì</label>
+                <label class="option-label"><input type="radio" name="q12" value="D"> D) Giovedì e venerdì</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>13. Quando si tiene il corso di Economia Aziendale?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q13" value="A"> A) Il mercoledì pomeriggio</label>
+                <label class="option-label"><input type="radio" name="q13" value="B"> B) Il lunedì mattina</label>
+                <label class="option-label"><input type="radio" name="q13" value="C"> C) Il giovedì pomeriggio</label>
+                <label class="option-label"><input type="radio" name="q13" value="D"> D) Il venerdì mattina</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>14. Che cosa fanno gli studenti il venerdì, secondo l'email?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q14" value="A"> A) Hanno lezione di Matematica</label>
+                <label class="option-label"><input type="radio" name="q14" value="B"> B) Sostengono un esame</label>
+                <label class="option-label"><input type="radio" name="q14" value="C"> C) Si dedicano allo studio individuale</label>
+                <label class="option-label"><input type="radio" name="q14" value="D"> D) Vanno in Segreteria</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>15. A chi deve scrivere Maria se ha domande sull'orario?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q15" value="A"> A) Al rettore</label>
+                <label class="option-label"><input type="radio" name="q15" value="B"> B) Al professor Bianchi, il tutor</label>
+                <label class="option-label"><input type="radio" name="q15" value="C"> C) Alla portineria</label>
+                <label class="option-label"><input type="radio" name="q15" value="D"> D) Ai compagni di corso</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>16. Chi ha inviato l'email a Maria?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q16" value="A"> A) Il professor Bianchi</label>
+                <label class="option-label"><input type="radio" name="q16" value="B"> B) Un'altra studentessa</label>
+                <label class="option-label"><input type="radio" name="q16" value="C"> C) La Segreteria Didattica</label>
+                <label class="option-label"><input type="radio" name="q16" value="D"> D) L'ufficio internazionale</label>
+            </div>
+        </div>
+
+        <h3 class="sub-title">1c. Strutture della lingua</h3>
+        <div class="grammar-microtext">
+            <strong>Microtesto A:</strong> Marco <span class="blank-num">17</span> uno studente Erasmus che vive a Roma. Ogni giorno <span class="blank-num">18</span> alla stazione Anagnina e prende la metro per arrivare <span class="blank-num">19</span> università. Le sue lezioni preferite <span class="blank-num">20</span> quelle di Storia dell'Arte.
+        </div>
+        <div class="question-card"><p><strong>17. Completa lo spazio 17:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q17" value="A"> A) sono</label>
+                <label class="option-label"><input type="radio" name="q17" value="B"> B) sei</label>
+                <label class="option-label"><input type="radio" name="q17" value="C"> C) è</label>
+                <label class="option-label"><input type="radio" name="q17" value="D"> D) siamo</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>18. Completa lo spazio 18:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q18" value="A"> A) vado</label>
+                <label class="option-label"><input type="radio" name="q18" value="B"> B) va</label>
+                <label class="option-label"><input type="radio" name="q18" value="C"> C) vai</label>
+                <label class="option-label"><input type="radio" name="q18" value="D"> D) andiamo</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>19. Completa lo spazio 19:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q19" value="A"> A) al</label>
+                <label class="option-label"><input type="radio" name="q19" value="B"> B) nel</label>
+                <label class="option-label"><input type="radio" name="q19" value="C"> C) all'</label>
+                <label class="option-label"><input type="radio" name="q19" value="D"> D) sul</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>20. Completa lo spazio 20:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q20" value="A"> A) è</label>
+                <label class="option-label"><input type="radio" name="q20" value="B"> B) sono</label>
+                <label class="option-label"><input type="radio" name="q20" value="C"> C) siamo</label>
+                <label class="option-label"><input type="radio" name="q20" value="D"> D) sei</label>
+            </div>
+        </div>
+
+        <div class="grammar-microtext">
+            <strong>Microtesto B:</strong> Le biblioteche dell'università <span class="blank-num">21</span> aperte dal lunedì al sabato. Gli studenti <span class="blank-num">22</span> prendere in prestito fino a cinque libri <span class="blank-num">23</span> volta. Se un libro è in ritardo, bisogna pagare <span class="blank-num">24</span> piccola multa.
+        </div>
+        <div class="question-card"><p><strong>21. Completa lo spazio 21:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q21" value="A"> A) sono</label>
+                <label class="option-label"><input type="radio" name="q21" value="B"> B) è</label>
+                <label class="option-label"><input type="radio" name="q21" value="C"> C) siamo</label>
+                <label class="option-label"><input type="radio" name="q21" value="D"> D) sei</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>22. Completa lo spazio 22:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q22" value="A"> A) può</label>
+                <label class="option-label"><input type="radio" name="q22" value="B"> B) posso</label>
+                <label class="option-label"><input type="radio" name="q22" value="C"> C) possono</label>
+                <label class="option-label"><input type="radio" name="q22" value="D"> D) puoi</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>23. Completa lo spazio 23:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q23" value="A"> A) per</label>
+                <label class="option-label"><input type="radio" name="q23" value="B"> B) alla</label>
+                <label class="option-label"><input type="radio" name="q23" value="C"> C) in</label>
+                <label class="option-label"><input type="radio" name="q23" value="D"> D) a</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>24. Completa lo spazio 24:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q24" value="A"> A) un</label>
+                <label class="option-label"><input type="radio" name="q24" value="B"> B) uno</label>
+                <label class="option-label"><input type="radio" name="q24" value="C"> C) una</label>
+                <label class="option-label"><input type="radio" name="q24" value="D"> D) le</label>
+            </div>
+        </div>
+
+        <!-- ================= SEZIONE 2: A2/B1+ ================= -->
+        <h2 class="section-title">Sezione 2 <span class="level-badge">Livello A2/B1+ · 24 domande · 40 min</span></h2>
+
+        <h3 class="sub-title">2a. Ascolto</h3>
+        <div class="audio-simulation">
+            <strong>Traccia Audio 2 (simulata):</strong> Dialogo in biblioteca tra due studenti. Sara: "Luca, hai già iniziato a studiare per l'esame di Diritto Commerciale?" Luca: "Sì, ma il programma è lunghissimo: dieci capitoli e tre casi pratici da analizzare. Sono un po' preoccupato perché prima c'è la prova scritta e poi, se la supero, anche l'orale." Sara: "Io ho fatto un piano di studio: leggo due capitoli al giorno e il venerdì faccio un riepilogo generale di quello che ho studiato durante la settimana. Tra due settimane dovrei aver finito tutto il programma." Luca: "Buona idea! Forse possiamo studiare insieme giovedì pomeriggio in sala studio, così ci scambiamo gli appunti e ci facciamo delle domande a vicenda." Sara: "Perfetto, ci vediamo alle 15:00 davanti all'ingresso della biblioteca, al primo piano."
+        </div>
+
+        <div class="question-card"><p><strong>25. Per quale esame si stanno preparando Sara e Luca?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q25" value="A"> A) Economia Aziendale</label>
+                <label class="option-label"><input type="radio" name="q25" value="B"> B) Diritto Commerciale</label>
+                <label class="option-label"><input type="radio" name="q25" value="C"> C) Matematica Finanziaria</label>
+                <label class="option-label"><input type="radio" name="q25" value="D"> D) Storia dell'Arte</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>26. Quanti capitoli ha il programma dell'esame?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q26" value="A"> A) Cinque</label>
+                <label class="option-label"><input type="radio" name="q26" value="B"> B) Sette</label>
+                <label class="option-label"><input type="radio" name="q26" value="C"> C) Dieci</label>
+                <label class="option-label"><input type="radio" name="q26" value="D"> D) Quindici</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>27. Quanti casi pratici deve analizzare Luca?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q27" value="A"> A) Due</label>
+                <label class="option-label"><input type="radio" name="q27" value="B"> B) Tre</label>
+                <label class="option-label"><input type="radio" name="q27" value="C"> C) Quattro</label>
+                <label class="option-label"><input type="radio" name="q27" value="D"> D) Nessuno</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>28. Perché Luca è preoccupato per l'esame?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q28" value="A"> A) Perché il professore è molto severo</label>
+                <label class="option-label"><input type="radio" name="q28" value="B"> B) Perché ci sono sia la prova scritta che l'orale</label>
+                <label class="option-label"><input type="radio" name="q28" value="C"> C) Perché l'esame è stato rimandato</label>
+                <label class="option-label"><input type="radio" name="q28" value="D"> D) Perché non ha i libri di testo</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>29. Quanti capitoli legge Sara ogni giorno, secondo il suo piano di studio?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q29" value="A"> A) Uno</label>
+                <label class="option-label"><input type="radio" name="q29" value="B"> B) Due</label>
+                <label class="option-label"><input type="radio" name="q29" value="C"> C) Tre</label>
+                <label class="option-label"><input type="radio" name="q29" value="D"> D) Quattro</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>30. Cosa fa Sara ogni venerdì?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q30" value="A"> A) Va in biblioteca con Luca</label>
+                <label class="option-label"><input type="radio" name="q30" value="B"> B) Sostiene una simulazione d'esame</label>
+                <label class="option-label"><input type="radio" name="q30" value="C"> C) Fa un riepilogo generale della settimana</label>
+                <label class="option-label"><input type="radio" name="q30" value="D"> D) Si riposa dallo studio</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>31. Quando decidono di studiare insieme Sara e Luca?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q31" value="A"> A) Lunedì mattina</label>
+                <label class="option-label"><input type="radio" name="q31" value="B"> B) Giovedì pomeriggio</label>
+                <label class="option-label"><input type="radio" name="q31" value="C"> C) Sabato sera</label>
+                <label class="option-label"><input type="radio" name="q31" value="D"> D) Domenica mattina</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>32. Dove e a che ora si incontrano Sara e Luca?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q32" value="A"> A) Alle 15:00, davanti all'ingresso della biblioteca</label>
+                <label class="option-label"><input type="radio" name="q32" value="B"> B) Alle 10:00, in Aula Magna</label>
+                <label class="option-label"><input type="radio" name="q32" value="C"> C) Alle 17:00, in segreteria</label>
+                <label class="option-label"><input type="radio" name="q32" value="D"> D) Alle 9:00, alla mensa</label>
+            </div>
+        </div>
+
+        <h3 class="sub-title">2b. Lettura</h3>
+        <div class="text-passage">
+            <strong>Testo 2:</strong> "Da quest'anno, l'Università di Tor Vergata ha introdotto un nuovo portale online, chiamato GOMP, per la gestione delle iscrizioni e dei pagamenti delle tasse universitarie. Attraverso il portale, gli studenti possono caricare i documenti necessari, controllare lo stato della propria carriera accademica e prenotare gli esami direttamente da casa, senza doversi spostare. L'introduzione del sistema ha semplificato molte procedure che prima richiedevano la presenza fisica in Segreteria, riducendo notevolmente le code e i tempi di attesa agli sportelli. Tuttavia, alcuni studenti internazionali hanno segnalato delle difficoltà nell'utilizzo del sistema, soprattutto a causa della lingua: il portale, infatti, è disponibile solo in italiano e in inglese, e non in altre lingue straniere. Per questo motivo, l'ateneo ha organizzato alcuni incontri informativi in Aula Magna per aiutare gli studenti stranieri a familiarizzare con la piattaforma."
+        </div>
+
+        <div class="question-card"><p><strong>33. Come si chiama il nuovo portale online dell'università?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q33" value="A"> A) Delphi</label>
+                <label class="option-label"><input type="radio" name="q33" value="B"> B) GOMP</label>
+                <label class="option-label"><input type="radio" name="q33" value="C"> C) Universitaly</label>
+                <label class="option-label"><input type="radio" name="q33" value="D"> D) Esse3</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>34. A cosa serve principalmente il portale GOMP?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q34" value="A"> A) A prenotare la mensa</label>
+                <label class="option-label"><input type="radio" name="q34" value="B"> B) A gestire iscrizioni e pagamento delle tasse</label>
+                <label class="option-label"><input type="radio" name="q34" value="C"> C) A trovare un alloggio</label>
+                <label class="option-label"><input type="radio" name="q34" value="D"> D) A richiedere il permesso di soggiorno</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>35. Cosa possono fare gli studenti tramite il portale, oltre a pagare le tasse?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q35" value="A"> A) Stampare il diploma di laurea</label>
+                <label class="option-label"><input type="radio" name="q35" value="B"> B) Caricare documenti, controllare la carriera e prenotare gli esami</label>
+                <label class="option-label"><input type="radio" name="q35" value="C"> C) Modificare il piano di studi senza approvazione</label>
+                <label class="option-label"><input type="radio" name="q35" value="D"> D) Contattare direttamente il rettore</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>36. Quale effetto ha avuto l'introduzione del portale sulle code in Segreteria?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q36" value="A"> A) Le ha aumentate</label>
+                <label class="option-label"><input type="radio" name="q36" value="B"> B) Non ha avuto alcun effetto</label>
+                <label class="option-label"><input type="radio" name="q36" value="C"> C) Le ha notevolmente ridotte</label>
+                <label class="option-label"><input type="radio" name="q36" value="D"> D) Ha eliminato la Segreteria</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>37. Quale difficoltà hanno segnalato alcuni studenti internazionali?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q37" value="A"> A) Il costo del servizio</label>
+                <label class="option-label"><input type="radio" name="q37" value="B"> B) La lentezza del sito</label>
+                <label class="option-label"><input type="radio" name="q37" value="C"> C) La lingua del portale</label>
+                <label class="option-label"><input type="radio" name="q37" value="D"> D) La mancanza di assistenza telefonica</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>38. In quali lingue è disponibile il portale GOMP?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q38" value="A"> A) Solo in italiano</label>
+                <label class="option-label"><input type="radio" name="q38" value="B"> B) Italiano e inglese</label>
+                <label class="option-label"><input type="radio" name="q38" value="C"> C) Italiano, inglese e francese</label>
+                <label class="option-label"><input type="radio" name="q38" value="D"> D) Solo in inglese</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>39. Cosa ha organizzato l'ateneo per aiutare gli studenti stranieri?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q39" value="A"> A) Lezioni private di lingua</label>
+                <label class="option-label"><input type="radio" name="q39" value="B"> B) Incontri informativi in Aula Magna</label>
+                <label class="option-label"><input type="radio" name="q39" value="C"> C) Un servizio di traduzione automatica</label>
+                <label class="option-label"><input type="radio" name="q39" value="D"> D) Una nuova app mobile</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>40. Dove si svolgono gli incontri informativi sul portale?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q40" value="A"> A) In biblioteca</label>
+                <label class="option-label"><input type="radio" name="q40" value="B"> B) In segreteria</label>
+                <label class="option-label"><input type="radio" name="q40" value="C"> C) In Aula Magna</label>
+                <label class="option-label"><input type="radio" name="q40" value="D"> D) Online, sul sito dell'ateneo</label>
+            </div>
+        </div>
+
+        <h3 class="sub-title">2c. Strutture della lingua</h3>
+        <div class="grammar-microtext">
+            <strong>Microtesto C:</strong> L'anno scorso, quando <span class="blank-num">41</span> ancora al liceo, Elena <span class="blank-num">42</span> una borsa di studio per venire a studiare in Italia. Il programma Erasmus, <span class="blank-num">43</span> le ha permesso di vivere a Roma per un semestre, le è piaciuto più <span class="blank-num">44</span> si aspettasse.
+        </div>
+        <div class="question-card"><p><strong>41. Completa lo spazio 41:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q41" value="A"> A) era</label>
+                <label class="option-label"><input type="radio" name="q41" value="B"> B) fu</label>
+                <label class="option-label"><input type="radio" name="q41" value="C"> C) è stata</label>
+                <label class="option-label"><input type="radio" name="q41" value="D"> D) sarebbe</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>42. Completa lo spazio 42:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q42" value="A"> A) vinceva</label>
+                <label class="option-label"><input type="radio" name="q42" value="B"> B) ha vinto</label>
+                <label class="option-label"><input type="radio" name="q42" value="C"> C) vince</label>
+                <label class="option-label"><input type="radio" name="q42" value="D"> D) vincerebbe</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>43. Completa lo spazio 43:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q43" value="A"> A) che</label>
+                <label class="option-label"><input type="radio" name="q43" value="B"> B) cui</label>
+                <label class="option-label"><input type="radio" name="q43" value="C"> C) chi</label>
+                <label class="option-label"><input type="radio" name="q43" value="D"> D) quale</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>44. Completa lo spazio 44:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q44" value="A"> A) di quanto</label>
+                <label class="option-label"><input type="radio" name="q44" value="B"> B) che</label>
+                <label class="option-label"><input type="radio" name="q44" value="C"> C) come</label>
+                <label class="option-label"><input type="radio" name="q44" value="D"> D) di come</label>
+            </div>
+        </div>
+
+        <div class="grammar-microtext">
+            <strong>Microtesto D:</strong> Se Marco <span class="blank-num">45</span> più tempo libero, <span class="blank-num">46</span> volentieri al corso di italiano per stranieri organizzato dal CLA. Purtroppo, lavora part-time in una libreria che si trova <span class="blank-num">47</span> vicino all'università <span class="blank-num">48</span> alla sua casa.
+        </div>
+        <div class="question-card"><p><strong>45. Completa lo spazio 45:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q45" value="A"> A) avesse</label>
+                <label class="option-label"><input type="radio" name="q45" value="B"> B) ha</label>
+                <label class="option-label"><input type="radio" name="q45" value="C"> C) avrebbe</label>
+                <label class="option-label"><input type="radio" name="q45" value="D"> D) abbia</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>46. Completa lo spazio 46:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q46" value="A"> A) si iscrive</label>
+                <label class="option-label"><input type="radio" name="q46" value="B"> B) si iscriverebbe</label>
+                <label class="option-label"><input type="radio" name="q46" value="C"> C) si iscriva</label>
+                <label class="option-label"><input type="radio" name="q46" value="D"> D) si iscrisse</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>47. Completa lo spazio 47:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q47" value="A"> A) così</label>
+                <label class="option-label"><input type="radio" name="q47" value="B"> B) più</label>
+                <label class="option-label"><input type="radio" name="q47" value="C"> C) meno</label>
+                <label class="option-label"><input type="radio" name="q47" value="D"> D) tanto</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>48. Completa lo spazio 48:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q48" value="A"> A) che</label>
+                <label class="option-label"><input type="radio" name="q48" value="B"> B) come</label>
+                <label class="option-label"><input type="radio" name="q48" value="C"> C) di</label>
+                <label class="option-label"><input type="radio" name="q48" value="D"> D) quanto</label>
+            </div>
+        </div>
+
+        <!-- ================= SEZIONE 3: B2/C1 ================= -->
+        <h2 class="section-title">Sezione 3 <span class="level-badge">Livello B2/C1 · 24 domande · 40 min</span></h2>
+
+        <h3 class="sub-title">3a. Ascolto</h3>
+        <div class="audio-simulation">
+            <strong>Traccia Audio 3 (simulata):</strong> "Benvenuti all'Università di Roma Tor Vergata. Gli studenti stranieri provenienti da Paesi extra-UE devono presentare il permesso di soggiorno per motivi di studio all'Ufficio Segreteria Studenti entro il 30 novembre, pena la sospensione della carriera universitaria. Coloro che non sono ancora in possesso del permesso, ma hanno già presentato la richiesta in Questura, devono comunque esibire la ricevuta postale e l'appuntamento fissato per il rilevamento delle impronte digitali. Si raccomanda inoltre di rinnovare il permesso di soggiorno almeno sessanta giorni prima della scadenza, poiché il rinnovo tardivo può comportare l'impossibilità di sostenere gli esami nella sessione successiva. In caso di smarrimento del documento, è necessario sporgere denuncia presso le forze dell'ordine e informare immediatamente l'Ufficio Relazioni Internazionali, che fornirà assistenza per le pratiche di duplicato."
+        </div>
+
+        <div class="question-card"><p><strong>49. A chi è rivolto principalmente l'obbligo di presentare il permesso di soggiorno?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q49" value="A"> A) A tutti gli studenti, italiani e stranieri</label>
+                <label class="option-label"><input type="radio" name="q49" value="B"> B) Solo agli studenti Erasmus</label>
+                <label class="option-label"><input type="radio" name="q49" value="C"> C) Agli studenti extra-UE</label>
+                <label class="option-label"><input type="radio" name="q49" value="D"> D) Solo ai docenti stranieri</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>50. Qual è la scadenza indicata per la presentazione del permesso di soggiorno?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q50" value="A"> A) Il 30 settembre</label>
+                <label class="option-label"><input type="radio" name="q50" value="B"> B) Il 30 novembre</label>
+                <label class="option-label"><input type="radio" name="q50" value="C"> C) Il 31 dicembre</label>
+                <label class="option-label"><input type="radio" name="q50" value="D"> D) Il 15 gennaio</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>51. Cosa rischia lo studente che non rispetta la scadenza?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q51" value="A"> A) Una multa amministrativa</label>
+                <label class="option-label"><input type="radio" name="q51" value="B"> B) L'espulsione dall'Italia</label>
+                <label class="option-label"><input type="radio" name="q51" value="C"> C) La sospensione della carriera universitaria</label>
+                <label class="option-label"><input type="radio" name="q51" value="D"> D) La perdita della borsa di studio</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>52. Cosa devono esibire gli studenti che hanno solo presentato la richiesta in Questura?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q52" value="A"> A) Il passaporto originale</label>
+                <label class="option-label"><input type="radio" name="q52" value="B"> B) La ricevuta postale e l'appuntamento per le impronte digitali</label>
+                <label class="option-label"><input type="radio" name="q52" value="C"> C) Un certificato medico</label>
+                <label class="option-label"><input type="radio" name="q52" value="D"> D) La carta d'identità italiana</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>53. Con quanto anticipo si raccomanda di rinnovare il permesso di soggiorno?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q53" value="A"> A) Almeno trenta giorni prima</label>
+                <label class="option-label"><input type="radio" name="q53" value="B"> B) Almeno novanta giorni prima</label>
+                <label class="option-label"><input type="radio" name="q53" value="C"> C) Almeno sessanta giorni prima</label>
+                <label class="option-label"><input type="radio" name="q53" value="D"> D) Non c'è un termine raccomandato</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>54. Quale conseguenza può avere un rinnovo tardivo del permesso?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q54" value="A"> A) L'impossibilità di sostenere gli esami nella sessione successiva</label>
+                <label class="option-label"><input type="radio" name="q54" value="B"> B) Il pagamento di una tassa aggiuntiva</label>
+                <label class="option-label"><input type="radio" name="q54" value="C"> C) Nessuna conseguenza particolare</label>
+                <label class="option-label"><input type="radio" name="q54" value="D"> D) L'obbligo di ripetere l'anno</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>55. Cosa bisogna fare in caso di smarrimento del permesso di soggiorno?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q55" value="A"> A) Aspettare il rinnovo naturale</label>
+                <label class="option-label"><input type="radio" name="q55" value="B"> B) Sporgere denuncia alle forze dell'ordine</label>
+                <label class="option-label"><input type="radio" name="q55" value="C"> C) Richiedere un nuovo visto all'ambasciata</label>
+                <label class="option-label"><input type="radio" name="q55" value="D"> D) Non è necessario fare nulla</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>56. Oltre alle forze dell'ordine, chi va informato in caso di smarrimento del documento?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q56" value="A"> A) Il professore di riferimento</label>
+                <label class="option-label"><input type="radio" name="q56" value="B"> B) L'Ufficio Relazioni Internazionali</label>
+                <label class="option-label"><input type="radio" name="q56" value="C"> C) Il rettore dell'università</label>
+                <label class="option-label"><input type="radio" name="q56" value="D"> D) L'ambasciata del proprio Paese</label>
+            </div>
+        </div>
+
+        <h3 class="sub-title">3b. Lettura</h3>
+        <div class="text-passage">
+            <strong>Testo 3:</strong> "La trasformazione digitale ha modificato radicalmente le abitudini dei consumatori globali. Nei mercati emergenti, le applicazioni mobili rappresentano non solo uno strumento di commercio, ma il principale vettore di inclusione finanziaria per le piccole imprese locali, che spesso non hanno accesso ai tradizionali servizi bancari. Secondo numerosi studi, l'adozione di piattaforme di pagamento digitale ha permesso a milioni di microimprenditori di accedere al credito e di ampliare la propria clientela oltre i confini locali. Tale fenomeno, tuttavia, non è esente da criticità: la scarsa diffusione di infrastrutture di rete adeguate in alcune aree rurali continua a rappresentare un ostacolo significativo, così come le preoccupazioni legate alla sicurezza dei dati personali degli utenti. Gli analisti concordano sul fatto che, affinché la trasformazione digitale produca benefici diffusi e duraturi, sia necessario un intervento coordinato tra governi, istituzioni finanziarie e operatori del settore tecnologico, volto a garantire un accesso equo alle infrastrutture digitali."
+        </div>
+
+        <div class="question-card"><p><strong>57. Secondo il testo, che ruolo hanno le applicazioni mobili nei mercati emergenti?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q57" value="A"> A) Sostituiscono completamente i negozi fisici</label>
+                <label class="option-label"><input type="radio" name="q57" value="B"> B) Favoriscono l'inclusione finanziaria delle piccole imprese</label>
+                <label class="option-label"><input type="radio" name="q57" value="C"> C) Riducono la sicurezza dei pagamenti digitali</label>
+                <label class="option-label"><input type="radio" name="q57" value="D"> D) Sono utilizzate esclusivamente dalle grandi multinazionali</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>58. Chi beneficia principalmente delle piattaforme di pagamento digitale, secondo il testo?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q58" value="A"> A) Le grandi banche internazionali</label>
+                <label class="option-label"><input type="radio" name="q58" value="B"> B) I governi locali</label>
+                <label class="option-label"><input type="radio" name="q58" value="C"> C) I piccoli imprenditori senza accesso ai servizi bancari tradizionali</label>
+                <label class="option-label"><input type="radio" name="q58" value="D"> D) Le multinazionali tecnologiche</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>59. Cosa hanno permesso le piattaforme digitali ai microimprenditori?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q59" value="A"> A) Di evitare ogni forma di tassazione</label>
+                <label class="option-label"><input type="radio" name="q59" value="B"> B) Di accedere al credito e ampliare la clientela</label>
+                <label class="option-label"><input type="radio" name="q59" value="C"> C) Di eliminare la concorrenza</label>
+                <label class="option-label"><input type="radio" name="q59" value="D"> D) Di ottenere finanziamenti pubblici garantiti</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>60. Quale ostacolo viene segnalato riguardo alle aree rurali?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q60" value="A"> A) L'eccessiva regolamentazione statale</label>
+                <label class="option-label"><input type="radio" name="q60" value="B"> B) La scarsa diffusione di infrastrutture di rete adeguate</label>
+                <label class="option-label"><input type="radio" name="q60" value="C"> C) La mancanza di interesse da parte degli abitanti</label>
+                <label class="option-label"><input type="radio" name="q60" value="D"> D) Il costo eccessivo degli smartphone</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>61. Quale ulteriore criticità viene menzionata nel testo, oltre alle infrastrutture?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q61" value="A"> A) La sicurezza dei dati personali degli utenti</label>
+                <label class="option-label"><input type="radio" name="q61" value="B"> B) L'eccessiva concorrenza tra operatori</label>
+                <label class="option-label"><input type="radio" name="q61" value="C"> C) La scarsa qualità delle applicazioni</label>
+                <label class="option-label"><input type="radio" name="q61" value="D"> D) Il basso numero di utenti registrati</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>62. Secondo gli analisti citati, cosa è necessario per benefici diffusi e duraturi?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q62" value="A"> A) Una riduzione delle tasse sulle imprese digitali</label>
+                <label class="option-label"><input type="radio" name="q62" value="B"> B) Un intervento coordinato tra governi, istituzioni finanziarie e operatori tecnologici</label>
+                <label class="option-label"><input type="radio" name="q62" value="C"> C) L'eliminazione delle banche tradizionali</label>
+                <label class="option-label"><input type="radio" name="q62" value="D"> D) Una maggiore concorrenza tra piattaforme di pagamento</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>63. Qual è l'obiettivo principale dell'intervento coordinato auspicato nel testo?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q63" value="A"> A) Aumentare i profitti delle multinazionali</label>
+                <label class="option-label"><input type="radio" name="q63" value="B"> B) Garantire un accesso equo alle infrastrutture digitali</label>
+                <label class="option-label"><input type="radio" name="q63" value="C"> C) Limitare l'uso delle applicazioni mobili</label>
+                <label class="option-label"><input type="radio" name="q63" value="D"> D) Favorire solo i mercati già sviluppati</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>64. Quale delle seguenti espressioni riassume meglio il ruolo delle app mobili descritto nel testo?</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q64" value="A"> A) Strumento marginale e poco diffuso</label>
+                <label class="option-label"><input type="radio" name="q64" value="B"> B) Principale vettore di inclusione finanziaria</label>
+                <label class="option-label"><input type="radio" name="q64" value="C"> C) Minaccia per la stabilità bancaria</label>
+                <label class="option-label"><input type="radio" name="q64" value="D"> D) Tecnologia riservata alle grandi aziende</label>
+            </div>
+        </div>
+
+        <h3 class="sub-title">3c. Strutture della lingua</h3>
+        <div class="grammar-microtext">
+            <strong>Microtesto E:</strong> Penso che il professore <span class="blank-num">65</span> già i risultati dell'esame sul portale, anche se non ne sono del tutto certo. Qualora i voti non <span class="blank-num">66</span> ancora pubblicati entro venerdì, gli studenti <span class="blank-num">67</span> presentare un reclamo formale in Segreteria. È importante che ogni studente <span class="blank-num">68</span> il proprio libretto aggiornato prima della sessione di laurea.
+        </div>
+        <div class="question-card"><p><strong>65. Completa lo spazio 65:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q65" value="A"> A) ha pubblicato</label>
+                <label class="option-label"><input type="radio" name="q65" value="B"> B) abbia pubblicato</label>
+                <label class="option-label"><input type="radio" name="q65" value="C"> C) pubblicasse</label>
+                <label class="option-label"><input type="radio" name="q65" value="D"> D) avesse pubblicato</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>66. Completa lo spazio 66:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q66" value="A"> A) sono pubblicati</label>
+                <label class="option-label"><input type="radio" name="q66" value="B"> B) fossero pubblicati</label>
+                <label class="option-label"><input type="radio" name="q66" value="C"> C) sarebbero pubblicati</label>
+                <label class="option-label"><input type="radio" name="q66" value="D"> D) siano pubblicati</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>67. Completa lo spazio 67:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q67" value="A"> A) potranno</label>
+                <label class="option-label"><input type="radio" name="q67" value="B"> B) potrebbero</label>
+                <label class="option-label"><input type="radio" name="q67" value="C"> C) possono</label>
+                <label class="option-label"><input type="radio" name="q67" value="D"> D) potessero</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>68. Completa lo spazio 68:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q68" value="A"> A) ha</label>
+                <label class="option-label"><input type="radio" name="q68" value="B"> B) abbia</label>
+                <label class="option-label"><input type="radio" name="q68" value="C"> C) avrebbe</label>
+                <label class="option-label"><input type="radio" name="q68" value="D"> D) avesse</label>
+            </div>
+        </div>
+
+        <div class="grammar-microtext">
+            <strong>Microtesto F:</strong> "Hai dato il passaporto al delegato dell'ufficio immigrazione?" "Sì, <span class="blank-num">69</span> ho dato stamattina, prima che lui <span class="blank-num">70</span> in Questura per l'appuntamento. Se non <span class="blank-num">71</span> tempo, gli avrei mandato una mail, ma alla fine tutto si è risolto senza che io <span class="blank-num">72</span> bisogno di ulteriori documenti."
+        </div>
+        <div class="question-card"><p><strong>69. Completa lo spazio 69:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q69" value="A"> A) lo gli</label>
+                <label class="option-label"><input type="radio" name="q69" value="B"> B) glielo</label>
+                <label class="option-label"><input type="radio" name="q69" value="C"> C) gliela</label>
+                <label class="option-label"><input type="radio" name="q69" value="D"> D) lo le</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>70. Completa lo spazio 70:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q70" value="A"> A) va</label>
+                <label class="option-label"><input type="radio" name="q70" value="B"> B) andasse</label>
+                <label class="option-label"><input type="radio" name="q70" value="C"> C) vada</label>
+                <label class="option-label"><input type="radio" name="q70" value="D"> D) andrebbe</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>71. Completa lo spazio 71:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q71" value="A"> A) ho avuto</label>
+                <label class="option-label"><input type="radio" name="q71" value="B"> B) avrei avuto</label>
+                <label class="option-label"><input type="radio" name="q71" value="C"> C) avessi avuto</label>
+                <label class="option-label"><input type="radio" name="q71" value="D"> D) abbia avuto</label>
+            </div>
+        </div>
+        <div class="question-card"><p><strong>72. Completa lo spazio 72:</strong></p>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q72" value="A"> A) ho bisogno</label>
+                <label class="option-label"><input type="radio" name="q72" value="B"> B) avessi bisogno</label>
+                <label class="option-label"><input type="radio" name="q72" value="C"> C) avrei bisogno</label>
+                <label class="option-label"><input type="radio" name="q72" value="D"> D) abbia bisogno</label>
+            </div>
+        </div>
+
+        <button type="button" class="btn-submit" onclick="calculateScore()">Invia il Test</button>
+    </form>
+
+    <div id="result">
+        <h2>Risultato del tuo Test</h2>
+        <p id="score-text" style="font-size: 22px; font-weight: bold;"></p>
+        <div class="section-breakdown">
+            <div id="score-s1"></div>
+            <div id="score-s2"></div>
+            <div id="score-s3"></div>
+        </div>
+        <p id="evaluation-text" style="font-size: 16px;"></p>
+    </div>
+</div>
+
+<script>
+    // Timer: 120 minuti, come il vero TEST ITA L2 CISIA
+    let totalTime = 120 * 60;
+    const timerElement = document.getElementById('time');
+
+    const countdown = setInterval(() => {
+        let minutes = Math.floor(totalTime / 60);
+        let seconds = totalTime % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        timerElement.textContent = `${minutes}:${seconds}`;
+
+        if (totalTime <= 0) {
+            clearInterval(countdown);
+            alert("Tempo scaduto! Il test verrà inviato automaticamente.");
+            calculateScore();
+        }
+        totalTime--;
+    }, 1000);
+
+    // Risposte corrette (72 domande, struttura ufficiale CISIA TEST ITA L2)
+    const correctAnswers = {
+        q1: "A", q2: "C", q3: "B", q4: "D", q5: "A", q6: "C", q7: "D", q8: "B",
+        q9: "B", q10: "C", q11: "B", q12: "B", q13: "A", q14: "C", q15: "B", q16: "C",
+        q17: "C", q18: "B", q19: "C", q20: "B", q21: "A", q22: "C", q23: "B", q24: "C",
+        q25: "B", q26: "C", q27: "B", q28: "B", q29: "B", q30: "C", q31: "B", q32: "A",
+        q33: "B", q34: "B", q35: "B", q36: "C", q37: "C", q38: "B", q39: "B", q40: "C",
+        q41: "A", q42: "B", q43: "A", q44: "A", q45: "A", q46: "B", q47: "A", q48: "B",
+        q49: "C", q50: "B", q51: "C", q52: "B", q53: "C", q54: "A", q55: "B", q56: "B",
+        q57: "B", q58: "C", q59: "B", q60: "B", q61: "A", q62: "B", q63: "B", q64: "B",
+        q65: "B", q66: "B", q67: "B", q68: "B", q69: "B", q70: "C", q71: "C", q72: "B"
+    };
+
+    function sectionOf(num) {
+        if (num <= 24) return 1;
+        if (num <= 48) return 2;
+        return 3;
+    }
+
+    function calculateScore() {
+        clearInterval(countdown);
+        let totalCorrect = 0;
+        const sectionScore = { 1: 0, 2: 0, 3: 0 };
+
+        for (let key in correctAnswers) {
+            const num = parseInt(key.replace('q', ''), 10);
+            const rbs = document.getElementsByName(key);
+            let selectedValue = null;
+            for (const rb of rbs) {
+                if (rb.checked) {
+                    selectedValue = rb.value;
+                    break;
+                }
+            }
+            // Punteggio ufficiale CISIA: +1 risposta esatta, 0 risposta omessa o errata (nessuna penalità)
+            if (selectedValue === correctAnswers[key]) {
+                totalCorrect += 1;
+                sectionScore[sectionOf(num)] += 1;
+            }
+        }
+
+        document.getElementById('quiz-form').style.display = 'none';
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+
+        document.getElementById('score-text').textContent = `Punteggio totale: ${totalCorrect} / 72`;
+        document.getElementById('score-s1').textContent = `Sezione 1 (A1/A2): ${sectionScore[1]} / 24`;
+        document.getElementById('score-s2').textContent = `Sezione 2 (A2/B1+): ${sectionScore[2]} / 24`;
+        document.getElementById('score-s3').textContent = `Sezione 3 (B2/C1): ${sectionScore[3]} / 24`;
+
+        let evalText = "";
+        if (totalCorrect >= 61) {
+            evalText = `Idoneo: hai raggiunto/superato la soglia di 61/72 richiesta dall'Università di Tor Vergata per l'idoneità linguistica di Livello B2. Sei pronto per i corsi a Tor Vergata!`;
+        } else if (totalCorrect >= 44) {
+            evalText = `Livello B1 superato, ma il punteggio (${totalCorrect}/72) è inferiore alla soglia di 61/72 richiesta da Tor Vergata. Ti consigliamo di seguire un corso di rinforzo per raggiungere il B2 prima della sessione ufficiale.`;
+        } else {
+            evalText = `Punteggio insufficiente (${totalCorrect}/72) per il livello richiesto. Rivedi la comprensione orale/scritta e le strutture grammaticali (congiuntivo, pronomi combinati) prima di ripetere il test.`;
+        }
+        document.getElementById('evaluation-text').textContent = evalText;
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+</script>
+
+</body>
+</html>
